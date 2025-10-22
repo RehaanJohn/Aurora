@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Avatar,
   AvatarFallback,
@@ -11,79 +11,21 @@ import { ScrollArea } from "../../components/ui/scroll-area";
 import { Separator } from "../../components/ui/separator";
 import { NavigationIcon } from "../../components/NavigationIcons";
 import { ProfilePopup } from "../../components/ProfilePopup";
+import {
+  type Category,
+  getFeaturedCommunities,
+  getTrendingCommunities,
+  getRecentCommunities,
+} from "../../data/communityData";
 
-const navigationItems = [
-  { icon: "home", label: "Home", active: true },
-  { icon: "music", label: "Music", active: false },
-  { icon: "gaming", label: "Gaming", active: false },
-  { icon: "education", label: "Education", active: false },
-  { icon: "tech", label: "Science & Tech", active: false },
-  { icon: "entertainment", label: "Entertainment", active: false },
-  { icon: "hubs", label: "Student Hubs", active: false },
-] as const;
-
-const featuredCommunities = [
-  {
-    title: "Virtual Reality",
-    description:
-      "A community for VR and novices alike, regular and friendly chat.",
-    image: "/group-img.png",
-    shape: "/shape-1.svg",
-    avatar: "/avatar.svg",
-    online: "5,678",
-    members: "345,678",
-  },
-];
-
-const popularCommunities = [
-  {
-    title: "Game Play",
-    description: "Always a new challenge. Great place to make new friends.",
-    image: "/photo-1539140953823-8de95668cb0e-1.png",
-    shape: "/union-1.svg",
-    avatar: "/polygon-1.png",
-    online: "28,628",
-    members: "527,955",
-  },
-  {
-    title: "3D Art",
-    description: "A great place to discuss art.",
-    image: "/photo-1634986666676-ec8fd927c23d-1.png",
-    polygonTop: "/polygon-16.svg",
-    polygonBottom: "/polygon-17.svg",
-    members: "345,678",
-  },
-  {
-    title: "NFT",
-    description: "An NFT community so that everyone can share their NFTs.",
-    image: "/7.png",
-    polygonTop: "/polygon-1-4.svg",
-    polygonBottom: "/polygon-2.svg",
-    members: "887,789",
-  },
-];
-
-const recentCommunities = [
-  {
-    title: "Movie recapped",
-    description: "Discuss your favourite movies and TV serie here.",
-    image: "/photo-1651211305258-0c08f09097b3-1.png",
-    members: "3",
-  },
-  {
-    title: "Science",
-    description: "A community for a scientific exploration enthusiast.",
-    image: "/photo-1539140953823-8de95668cb0e-1-1.png",
-    shape: "/union.svg",
-    members: "58",
-  },
-  {
-    title: "Space",
-    description: "A community for the space enthusiast.",
-    image: "/photo-1539140953823-8de95668cb0e-1-2.png",
-    shape: "/union-2.svg",
-    members: "209",
-  },
+const navigationItems: Array<{ icon: Category; label: string }> = [
+  { icon: "home", label: "Home" },
+  { icon: "music", label: "Music" },
+  { icon: "gaming", label: "Gaming" },
+  { icon: "education", label: "Education" },
+  { icon: "tech", label: "Science & Tech" },
+  { icon: "entertainment", label: "Entertainment" },
+  { icon: "hubs", label: "Student Hubs" },
 ];
 
 const newMembers = [
@@ -103,22 +45,31 @@ const newMembers = [
     avatar: "/polygon-1-2.png",
   },
   {
-    name: "Mark  Morain",
+    name: "Mark Morain",
     time: "40 min ago",
     avatar: "/polygon-1-3.png",
   },
 ];
 
-const topBarIcons = [
-  { icon: "􀣪" },
-  { icon: "􀋙" },
-  { icon: "􀌤" },
-  { icon: "􀣋" },
-];
-
 export const Desktop = (): JSX.Element => {
-  const [activeNav, setActiveNav] = useState("Home");
+  const [activeNav, setActiveNav] = useState<Category>("home");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Get filtered communities based on active navigation
+  const featuredCommunities = useMemo(
+    () => getFeaturedCommunities(activeNav),
+    [activeNav]
+  );
+
+  const popularCommunities = useMemo(
+    () => getTrendingCommunities(activeNav).slice(0, 3),
+    [activeNav]
+  );
+
+  const recentCommunities = useMemo(
+    () => getRecentCommunities(activeNav).slice(0, 3),
+    [activeNav]
+  );
 
   const handleCommunityClick = (communityName: string) => {
     console.log(`Opening community: ${communityName}`);
@@ -126,6 +77,12 @@ export const Desktop = (): JSX.Element => {
 
   const handleMemberClick = (memberName: string) => {
     console.log(`Opening member profile: ${memberName}`);
+  };
+
+  // Get category display name
+  const getCategoryDisplayName = () => {
+    const item = navigationItems.find((nav) => nav.icon === activeNav);
+    return item?.label || "Home";
   };
 
   return (
@@ -222,9 +179,9 @@ export const Desktop = (): JSX.Element => {
               <Button
                 key={index}
                 variant="ghost"
-                onClick={() => setActiveNav(item.label)}
+                onClick={() => setActiveNav(item.icon)}
                 className={`h-auto justify-start gap-3 px-3 py-2.5 rounded-lg ${
-                  activeNav === item.label
+                  activeNav === item.icon
                     ? "bg-white/10 backdrop-blur-sm shadow-lg"
                     : "bg-transparent hover:bg-white/5"
                 } transition-all duration-300`}
@@ -232,14 +189,16 @@ export const Desktop = (): JSX.Element => {
                 <NavigationIcon
                   type={item.icon}
                   className={`w-5 h-5 ${
-                    activeNav === item.label ? "text-white" : "text-white/60"
+                    activeNav === item.icon ? "text-white" : "text-white/60"
                   }`}
                 />
-                <span className={`[font-family:'Lato',Helvetica] text-[15px] tracking-[0.36px] ${
-                  activeNav === item.label
-                    ? "font-semibold text-white"
-                    : "font-normal text-white/80"
-                }`}>
+                <span
+                  className={`[font-family:'Lato',Helvetica] text-[15px] tracking-[0.36px] ${
+                    activeNav === item.icon
+                      ? "font-semibold text-white"
+                      : "font-normal text-white/80"
+                  }`}
+                >
                   {item.label}
                 </span>
               </Button>
@@ -256,39 +215,8 @@ export const Desktop = (): JSX.Element => {
         <header className="h-[60px] bg-white/5 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-6">
           <ProfilePopup username="sophiefortune" avatar="/user-profil.png" />
 
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-auto w-auto p-0 hover:bg-transparent relative"
-            >
-              <img
-                className="w-[29px] h-8"
-                alt="Polygon"
-                src="/polygon-1-13.svg"
-              />
-              <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 [font-family:'SF_Pro_Display-Medium',Helvetica] font-medium text-[#ffffff99] text-sm">
-                􀊱
-              </span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-auto w-auto p-0 hover:bg-transparent"
-            >
-              <span className="[font-family:'SF_Pro_Display-Medium',Helvetica] font-medium text-[#ffffff99] text-sm">
-                􀺹
-              </span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-auto w-auto p-0 hover:bg-transparent"
-            >
-              <span className="[font-family:'SF_Pro_Display-Medium',Helvetica] font-medium text-[#ffffff99] text-sm">
-                􀜕
-              </span>
-            </Button>
+          <div className="flex items-center gap-2">
+            <span className="text-white/60 text-sm font-medium">Daccord</span>
           </div>
         </header>
 
@@ -334,7 +262,7 @@ export const Desktop = (): JSX.Element => {
               <section>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[22px]">
-                    Featured Community
+                    Featured Communities
                   </h2>
                   <Button
                     variant="link"
@@ -344,8 +272,15 @@ export const Desktop = (): JSX.Element => {
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4">
-                  {featuredCommunities.map((community, index) => (
+                {featuredCommunities.length === 0 ? (
+                  <div className="text-center py-12 text-white/40">
+                    <p className="[font-family:'Lato',Helvetica] text-[15px]">
+                      No featured communities in {getCategoryDisplayName()} yet.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4">
+                    {featuredCommunities.map((community, index) => (
                     <Card
                       key={index}
                       onClick={() => handleCommunityClick(community.title)}
@@ -401,6 +336,7 @@ export const Desktop = (): JSX.Element => {
                     </Card>
                   ))}
                 </div>
+                )}
               </section>
 
               <section>
@@ -416,8 +352,15 @@ export const Desktop = (): JSX.Element => {
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  {popularCommunities.map((community, index) => (
+                {popularCommunities.length === 0 ? (
+                  <div className="text-center py-12 text-white/40">
+                    <p className="[font-family:'Lato',Helvetica] text-[15px]">
+                      No popular communities in {getCategoryDisplayName()} yet.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-4">
+                    {popularCommunities.map((community, index) => (
                     <Card
                       key={index}
                       onClick={() => handleCommunityClick(community.title)}
@@ -523,12 +466,13 @@ export const Desktop = (): JSX.Element => {
                     </Card>
                   ))}
                 </div>
+                )}
               </section>
 
               <section>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[22px]">
-                    Recent Add
+                    Recently Added
                   </h2>
                   <Button
                     variant="link"
@@ -538,8 +482,15 @@ export const Desktop = (): JSX.Element => {
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  {recentCommunities.map((community, index) => (
+                {recentCommunities.length === 0 ? (
+                  <div className="text-center py-12 text-white/40">
+                    <p className="[font-family:'Lato',Helvetica] text-[15px]">
+                      No recent communities in {getCategoryDisplayName()} yet.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-4">
+                    {recentCommunities.map((community, index) => (
                     <Card
                       key={index}
                       onClick={() => handleCommunityClick(community.title)}
@@ -580,6 +531,7 @@ export const Desktop = (): JSX.Element => {
                     </Card>
                   ))}
                 </div>
+                )}
               </section>
             </div>
           </ScrollArea>
@@ -587,43 +539,10 @@ export const Desktop = (): JSX.Element => {
       </main>
 
       <aside className="w-[360px] bg-white/5 backdrop-blur-xl overflow-hidden border-l border-white/10 flex flex-col relative z-10">
-        <header className="h-[60px] flex items-center justify-between px-6 bg-white/0 border-b border-white/10">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-auto w-auto p-0 hover:bg-transparent"
-          >
-            <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] font-normal text-[#ffffff99] text-sm">
-              􀣪
-            </span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-auto w-auto p-0 hover:bg-transparent"
-          >
-            <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] font-normal text-[#ffffff99] text-sm">
-              􀋙
-            </span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-auto w-auto p-0 hover:bg-transparent"
-          >
-            <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] font-normal text-[#ffffff99] text-sm">
-              􀌤
-            </span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-auto w-auto p-0 hover:bg-transparent"
-          >
-            <span className="[font-family:'SF_Pro_Display-Regular',Helvetica] font-normal text-label-colordarksecondary text-base">
-              􀣋
-            </span>
-          </Button>
+        <header className="h-[60px] flex items-center justify-center px-6 bg-white/0 border-b border-white/10">
+          <h2 className="[font-family:'Lato',Helvetica] font-semibold text-white text-[15px]">
+            Activity
+          </h2>
         </header>
 
         <ScrollArea className="flex-1 p-6">
@@ -631,80 +550,9 @@ export const Desktop = (): JSX.Element => {
             <div className="flex flex-col items-center gap-4">
               <div className="relative">
                 <img
-                  className="w-[111px] h-[121px] rounded-[22px]"
-                  alt="User profil"
+                  className="w-[111px] h-[121px] rounded-[22px] border-2 border-white/20 shadow-lg"
+                  alt="User profile"
                   src="/user-profil.png"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[137px] h-[146px]"
-                  alt="Polygon"
-                  src="/polygon-1-13-1.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[135
-px] h-[150px]"
-                  alt="Polygon"
-                  src="/polygon-1-12.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[139px] h-[145px]"
-                  alt="Polygon"
-                  src="/polygon-1-11.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[141px] h-[146px]"
-                  alt="Polygon"
-                  src="/polygon-1-10.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[146px] h-[138px]"
-                  alt="Polygon"
-                  src="/polygon-1-9.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[151px] h-[134px]"
-                  alt="Polygon"
-                  src="/polygon-1-8.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-36 h-[139px]"
-                  alt="Polygon"
-                  src="/polygon-1-7.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[145px] h-[142px]"
-                  alt="Polygon"
-                  src="/polygon-1-6.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[138px] h-[145px]"
-                  alt="Polygon"
-                  src="/polygon-1-5-1.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[133px] h-[151px]"
-                  alt="Polygon"
-                  src="/polygon-1-4-1.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[139px] h-36"
-                  alt="Polygon"
-                  src="/polygon-1-3-1.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[143px] h-36"
-                  alt="Polygon"
-                  src="/polygon-1-2-1.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[145px] h-[139px]"
-                  alt="Polygon"
-                  src="/polygon-1-1-1.svg"
-                />
-                <img
-                  className="absolute -bottom-2 -right-2 w-[151px] h-[132px]"
-                  alt="Polygon"
-                  src="/polygon-1-5.svg"
                 />
               </div>
 
