@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button } from "../../components/ui/button";
+import { useState, useEffect } from "react";
 import { Input } from "../../components/ui/input";
 import { ScrollArea } from "../../components/ui/scroll-area";
 import { Hash, Volume2, Send, Plus, Smile, Gift, Paperclip } from "lucide-react";
@@ -64,18 +63,26 @@ export const Chat = ({ server }: ChatProps): JSX.Element => {
   const [activeChannel, setActiveChannel] = useState(mockChannels[0]);
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [messageInput, setMessageInput] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
 
   const handleSendMessage = () => {
     if (!messageInput.trim()) return;
-
     const newMessage: Message = {
       id: Date.now().toString(),
       author: "You",
       avatar: "/user-profil.png",
       content: messageInput,
-      timestamp: "Today at " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      timestamp:
+        "Today at " +
+        new Date().toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+        }),
     };
-
     setMessages([...messages, newMessage]);
     setMessageInput("");
   };
@@ -88,150 +95,115 @@ export const Chat = ({ server }: ChatProps): JSX.Element => {
   };
 
   return (
-    <div className="flex h-full">
-      {/* Channels Sidebar */}
-      <div className="w-60 bg-[#2b2d31] flex flex-col">
-        {/* Server Name */}
-        <div className="h-12 px-4 flex items-center border-b border-black/20 shadow-sm">
-          <h2 className="[font-family:'Lato',Helvetica] font-bold text-white text-[15px] truncate">
-            {server.name}
-          </h2>
-        </div>
-
-        {/* Channels List */}
-        <ScrollArea className="flex-1 px-2 py-2">
-          <div className="space-y-0.5">
-            <div className="px-2 py-1.5">
-              <span className="[font-family:'Lato',Helvetica] text-[#949ba4] text-xs font-semibold uppercase tracking-wide">
-                Text Channels
-              </span>
-            </div>
-            {mockChannels
-              .filter((channel) => channel.type === "text")
-              .map((channel) => (
-                <Button
-                  key={channel.id}
-                  variant="ghost"
-                  onClick={() => setActiveChannel(channel)}
-                  className={`w-full justify-start gap-1.5 px-2 py-1.5 h-auto rounded-md ${
-                    activeChannel.id === channel.id
-                      ? "bg-[#404249] text-white"
-                      : "text-[#949ba4] hover:bg-[#35373c] hover:text-[#dbdee1]"
-                  } transition-all duration-150`}
-                >
-                  <Hash className="w-5 h-5" />
-                  <span className="[font-family:'Lato',Helvetica] text-[15px]">{channel.name}</span>
-                </Button>
-              ))}
-
-            <div className="px-2 py-1.5 mt-4">
-              <span className="[font-family:'Lato',Helvetica] text-[#949ba4] text-xs font-semibold uppercase tracking-wide">
-                Voice Channels
-              </span>
-            </div>
-            {mockChannels
-              .filter((channel) => channel.type === "voice")
-              .map((channel) => (
-                <Button
-                  key={channel.id}
-                  variant="ghost"
-                  className="w-full justify-start gap-1.5 px-2 py-1.5 h-auto rounded-md text-[#949ba4] hover:bg-[#35373c] hover:text-[#dbdee1] transition-all duration-150"
-                >
-                  <Volume2 className="w-5 h-5" />
-                  <span className="[font-family:'Lato',Helvetica] text-[15px]">{channel.name}</span>
-                </Button>
-              ))}
-          </div>
-        </ScrollArea>
-      </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-[#313338]">
-        {/* Channel Header */}
-        <div className="h-12 px-4 flex items-center border-b border-black/20 shadow-sm">
-          <Hash className="w-6 h-6 text-[#80848e] mr-2" />
-          <span className="[font-family:'Lato',Helvetica] font-bold text-white text-[16px]">
-            {activeChannel.name}
-          </span>
-        </div>
-
-        {/* Messages Area */}
-        <ScrollArea className="flex-1 px-4 py-4">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div key={message.id} className="flex gap-4 hover:bg-[#2e3035] px-4 py-2 -mx-4 rounded">
-                <img
-                  src={message.avatar}
-                  alt={message.author}
-                  className="w-10 h-10 rounded-full flex-shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="[font-family:'Lato',Helvetica] font-semibold text-white text-[15px]">
-                      {message.author}
-                    </span>
-                    <span className="[font-family:'Lato',Helvetica] text-[#949ba4] text-xs">
-                      {message.timestamp}
-                    </span>
-                  </div>
-                  <p className="[font-family:'Lato',Helvetica] text-[#dbdee1] text-[15px] leading-[1.375rem] break-words">
-                    {message.content}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-
-        {/* Message Input */}
-        <div className="px-4 pb-6">
-          <div className="bg-[#383a40] rounded-lg px-4 py-3 flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 text-[#b5bac1] hover:text-[#dbdee1] hover:bg-transparent"
+    <div className="flex justify-center items-center h-screen w-screen bg-gradient-to-br from-[#b5caff] via-[#a7bdfc] to-[#c6d6ff] dark:from-[#0b0f17] dark:via-[#121827] dark:to-[#0d111a] text-gray-800 dark:text-gray-100 overflow-hidden">
+      <div className="flex h-[95vh] w-full max-w-[1400px] scale-[0.95] rounded-2xl overflow-hidden shadow-xl backdrop-blur-xl bg-white/10 dark:bg-[#1b1f2e]/10 border border-white/10">
+        
+        {/* Sidebar */}
+        <aside className="w-56 flex-shrink-0 backdrop-blur-md bg-white/20 dark:bg-[#1b1f2e]/30 border-r border-white/10 dark:border-white/10 flex flex-col">
+          <div className="h-12 flex items-center justify-between px-4 border-b border-white/10 dark:border-white/10">
+            <h2 className="font-semibold truncate text-gray-900 dark:text-gray-100">{server.name}</h2>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="text-base text-gray-700 dark:text-gray-200 hover:scale-110 transition"
             >
-              <Plus className="h-5 w-5" />
-            </Button>
+              {darkMode ? "☀️" : "🌙"}
+            </button>
+          </div>
+
+          <ScrollArea className="flex-1 p-3">
+            <div className="space-y-4">
+              <div>
+                <span className="text-xs uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2 block">Text Channels</span>
+                {mockChannels
+                  .filter((ch) => ch.type === "text")
+                  .map((ch) => (
+                    <button
+                      key={ch.id}
+                      onClick={() => setActiveChannel(ch)}
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition text-sm
+                        ${
+                          activeChannel.id === ch.id
+                            ? "bg-white/50 dark:bg-white/10 text-blue-600 dark:text-blue-300 font-medium"
+                            : "hover:bg-white/30 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300"
+                        }`}
+                    >
+                      <Hash className="w-4 h-4 opacity-70" />
+                      {ch.name}
+                    </button>
+                  ))}
+              </div>
+
+              <div>
+                <span className="text-xs uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2 block">Voice Channels</span>
+                {mockChannels
+                  .filter((ch) => ch.type === "voice")
+                  .map((ch) => (
+                    <div
+                      key={ch.id}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/30 dark:hover:bg-white/5 text-sm text-gray-700 dark:text-gray-300"
+                    >
+                      <Volume2 className="w-4 h-4 opacity-70" />
+                      {ch.name}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </ScrollArea>
+        </aside>
+
+        {/* Main Chat */}
+        <main className="flex-1 flex flex-col">
+          <header className="h-12 flex items-center px-5 border-b border-white/10 dark:border-white/10 backdrop-blur-md bg-white/20 dark:bg-[#1b1f2e]/20">
+            <Hash className="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
+            <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">{activeChannel.name}</h3>
+          </header>
+
+          <ScrollArea className="flex-1 p-4 overflow-y-auto">
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className="flex gap-3 items-start p-3 rounded-xl backdrop-blur-md bg-white/30 dark:bg-white/10 hover:shadow-md transition"
+                >
+                  <img src={msg.avatar} alt={msg.author} className="w-8 h-8 rounded-full" />
+                  <div>
+                    <div className="flex items-baseline gap-2 mb-0.5">
+                      <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{msg.author}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{msg.timestamp}</span>
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 text-[14px] leading-snug">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          <footer className="p-3 backdrop-blur-md bg-white/20 dark:bg-[#1b1f2e]/20 border-t border-white/10 dark:border-white/10 flex items-center gap-2">
+            <button className="p-1.5 rounded-full hover:bg-white/30 dark:hover:bg-white/10 transition">
+              <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            </button>
             <Input
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={`Message #${activeChannel.name}`}
-              className="flex-1 bg-transparent border-0 text-white text-[15px] [font-family:'Lato',Helvetica] placeholder:text-[#6d6f78] h-auto p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="flex-1 bg-white/50 dark:bg-white/10 border-none rounded-lg text-[14px] text-gray-800 dark:text-gray-100 focus-visible:ring-0"
             />
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 text-[#b5bac1] hover:text-[#dbdee1] hover:bg-transparent"
-              >
-                <Gift className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 text-[#b5bac1] hover:text-[#dbdee1] hover:bg-transparent"
-              >
-                <Paperclip className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 text-[#b5bac1] hover:text-[#dbdee1] hover:bg-transparent"
-              >
-                <Smile className="h-5 w-5" />
-              </Button>
-              <Button
+            <div className="flex items-center gap-1.5">
+              {[Gift, Paperclip, Smile].map((Icon, i) => (
+                <button key={i} className="p-1.5 rounded-full hover:bg-white/30 dark:hover:bg-white/10 transition text-gray-600 dark:text-gray-300">
+                  <Icon className="w-4 h-4" />
+                </button>
+              ))}
+              <button
                 onClick={handleSendMessage}
-                size="icon"
-                className="h-8 w-8 bg-[#5865f2] hover:bg-[#4752c4] text-white rounded-md"
+                className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg shadow transition"
               >
-                <Send className="h-4 w-4" />
-              </Button>
+                <Send className="w-4 h-4" />
+              </button>
             </div>
-          </div>
-        </div>
+          </footer>
+        </main>
       </div>
     </div>
   );
