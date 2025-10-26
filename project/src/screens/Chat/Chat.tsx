@@ -4,6 +4,7 @@ import { ScrollArea } from "../../components/ui/scroll-area";
 import { Button } from "../../components/ui/button";
 import { useAccount } from "wagmi";
 import { useCheckMembership } from "../../lib/contracts";
+import { moderateMessage } from "../../moderation";
 import {
   Hash,
   Volume2,
@@ -13,6 +14,7 @@ import {
   Gift,
   Paperclip,
   TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
 
 interface Server {
@@ -85,23 +87,63 @@ export const Chat = ({
   const [activeChannel, setActiveChannel] = useState(mockChannels[0]);
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [messageInput, setMessageInput] = useState("");
+  const [moderationWarning, setModerationWarning] = useState<string | null>(
+    null
+  );
+  const [isSending, setIsSending] = useState(false);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!messageInput.trim()) return;
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      author: "You",
-      avatar: "/user-profil.png",
-      content: messageInput,
-      timestamp:
-        "Today at " +
-        new Date().toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        }),
-    };
-    setMessages([...messages, newMessage]);
-    setMessageInput("");
+
+    setIsSending(true);
+    setModerationWarning(null);
+
+    try {
+      // Run moderation check
+      const moderationResult = await moderateMessage(messageInput);
+
+      if (!moderationResult.allowed) {
+        // Message blocked by moderation
+        setModerationWarning(
+          `⚠️ Message blocked: ${
+            moderationResult.categories?.join(", ") || "Harmful content"
+          }\n${moderationResult.reason || ""}`
+        );
+        setIsSending(false);
+        return;
+      }
+
+      // Message allowed - send it (use cleaned version if profanity was censored)
+      const newMessage: Message = {
+        id: Date.now().toString(),
+        author: "You",
+        avatar: "/user-profil.png",
+        content: moderationResult.cleanedMessage,
+        timestamp:
+          "Today at " +
+          new Date().toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+          }),
+      };
+
+      setMessages([...messages, newMessage]);
+      setMessageInput("");
+
+      // Show info if message was cleaned but allowed
+      if (
+        moderationResult.reason &&
+        moderationResult.reason.includes("profanity")
+      ) {
+        setModerationWarning("ℹ️ " + moderationResult.reason);
+        setTimeout(() => setModerationWarning(null), 3000);
+      }
+    } catch (error) {
+      // Silently handle errors - moderation system has internal fallbacks
+      setModerationWarning("❌ Unable to send message. Please try again.");
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -259,32 +301,63 @@ export const Chat = ({
             </div>
           </ScrollArea>
 
-          <footer className="px-6 py-4 backdrop-blur-xl bg-white/5 border-t border-white/10 flex items-center gap-3 flex-shrink-0">
-            <button className="p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
-              <Plus className="w-5 h-5 text-white/60" />
-            </button>
-            <Input
-              value={messageInput}
-              onChange={(e) => setMessageInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder={`Message #${activeChannel.name}`}
-              className="flex-1 bg-white/10 border-none rounded-lg [font-family:'Lato',Helvetica] text-[15px] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/20 h-11"
-            />
-            <div className="flex items-center gap-2">
-              {[Gift, Paperclip, Smile].map((Icon, i) => (
-                <button
-                  key={i}
-                  className="p-2 rounded-lg hover:bg-white/10 transition-all duration-300"
-                >
-                  <Icon className="w-5 h-5 text-white/60" />
-                </button>
-              ))}
-              <button
-                onClick={handleSendMessage}
-                className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg transition-all duration-300 flex items-center gap-2"
+          <footer className="px-6 py-4 backdrop-blur-xl bg-white/5 border-t border-white/10 flex flex-col gap-3 flex-shrink-0">
+            {moderationWarning && (
+              <div
+                className={`px-4 py-3 rounded-lg flex items-start gap-3 ${
+                  moderationWarning.startsWith("⚠️")
+                    ? "bg-red-500/20 border border-red-500/30"
+                    : "bg-blue-500/20 border border-blue-500/30"
+                }`}
               >
-                <Send className="w-5 h-5" />
+                <AlertTriangle
+                  className={`w-5 h-5 flex-shrink-0 ${
+                    moderationWarning.startsWith("⚠️")
+                      ? "text-red-400"
+                      : "text-blue-400"
+                  }`}
+                />
+                <p
+                  className={`[font-family:'Lato',Helvetica] text-sm ${
+                    moderationWarning.startsWith("⚠️")
+                      ? "text-red-300"
+                      : "text-blue-300"
+                  }`}
+                >
+                  {moderationWarning}
+                </p>
+              </div>
+            )}
+            <div className="flex items-center gap-3">
+              <button className="p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+                <Plus className="w-5 h-5 text-white/60" />
               </button>
+              <Input
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                disabled={isSending}
+                placeholder={`Message #${activeChannel.name}`}
+                className="flex-1 bg-white/10 border-none rounded-lg [font-family:'Lato',Helvetica] text-[15px] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/20 h-11"
+              />
+              <div className="flex items-center gap-2">
+                {[Gift, Paperclip, Smile].map((Icon, i) => (
+                  <button
+                    key={i}
+                    className="p-2 rounded-lg hover:bg-white/10 transition-all duration-300"
+                  >
+                    <Icon className="w-5 h-5 text-white/60" />
+                  </button>
+                ))}
+                <button
+                  onClick={handleSendMessage}
+                  disabled={isSending}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-5 h-5" />
+                  {isSending && <span className="text-xs">Checking...</span>}
+                </button>
+              </div>
             </div>
           </footer>
         </main>
