@@ -1,7 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import { ScrollArea } from "../../components/ui/scroll-area";
-import { Hash, Volume2, Send, Plus, Smile, Gift, Paperclip } from "lucide-react";
+import {
+  Hash,
+  Volume2,
+  Send,
+  Plus,
+  Smile,
+  Gift,
+  Paperclip,
+} from "lucide-react";
 
 interface Server {
   id: string;
@@ -63,11 +71,6 @@ export const Chat = ({ server }: ChatProps): JSX.Element => {
   const [activeChannel, setActiveChannel] = useState(mockChannels[0]);
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [messageInput, setMessageInput] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
 
   const handleSendMessage = () => {
     if (!messageInput.trim()) return;
@@ -95,111 +98,145 @@ export const Chat = ({ server }: ChatProps): JSX.Element => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen w-screen bg-gradient-to-br from-[#b5caff] via-[#a7bdfc] to-[#c6d6ff] dark:from-[#0b0f17] dark:via-[#121827] dark:to-[#0d111a] text-gray-800 dark:text-gray-100 overflow-hidden">
-      <div className="flex h-[95vh] w-full max-w-[1400px] scale-[0.95] rounded-2xl overflow-hidden shadow-xl backdrop-blur-xl bg-white/10 dark:bg-[#1b1f2e]/10 border border-white/10">
-        
+    <div className="flex h-full w-full bg-transparent overflow-hidden">
+      <div className="flex h-full w-full overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-56 flex-shrink-0 backdrop-blur-md bg-white/20 dark:bg-[#1b1f2e]/30 border-r border-white/10 dark:border-white/10 flex flex-col">
-          <div className="h-12 flex items-center justify-between px-4 border-b border-white/10 dark:border-white/10">
-            <h2 className="font-semibold truncate text-gray-900 dark:text-gray-100">{server.name}</h2>
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="text-base text-gray-700 dark:text-gray-200 hover:scale-110 transition"
-            >
-              {darkMode ? "☀️" : "🌙"}
-            </button>
+        <aside className="w-[280px] flex-shrink-0 backdrop-blur-xl bg-white/5 border-r border-white/10 flex flex-col overflow-hidden">
+          <div className="h-[60px] flex items-center justify-between px-6 border-b border-white/10 flex-shrink-0">
+            <h2 className="[font-family:'Lato',Helvetica] font-bold text-white text-[17px] truncate">
+              {server.name}
+            </h2>
           </div>
 
-          <ScrollArea className="flex-1 p-3">
-            <div className="space-y-4">
+          <ScrollArea className="flex-1 px-4 py-6 overflow-y-auto">
+            <div className="space-y-6">
               <div>
-                <span className="text-xs uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2 block">Text Channels</span>
-                {mockChannels
-                  .filter((ch) => ch.type === "text")
-                  .map((ch) => (
-                    <button
-                      key={ch.id}
-                      onClick={() => setActiveChannel(ch)}
-                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition text-sm
-                        ${
-                          activeChannel.id === ch.id
-                            ? "bg-white/50 dark:bg-white/10 text-blue-600 dark:text-blue-300 font-medium"
-                            : "hover:bg-white/30 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300"
-                        }`}
-                    >
-                      <Hash className="w-4 h-4 opacity-70" />
-                      {ch.name}
-                    </button>
-                  ))}
+                <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff8c] text-[15px] mb-2 block">
+                  TEXT CHANNELS
+                </span>
+                <div className="space-y-1">
+                  {mockChannels
+                    .filter((ch) => ch.type === "text")
+                    .map((ch) => (
+                      <button
+                        key={ch.id}
+                        onClick={() => setActiveChannel(ch)}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-300
+                          ${
+                            activeChannel.id === ch.id
+                              ? "bg-white/10 backdrop-blur-sm shadow-lg"
+                              : "bg-transparent hover:bg-white/5"
+                          }`}
+                      >
+                        <Hash
+                          className={`w-5 h-5 ${
+                            activeChannel.id === ch.id
+                              ? "text-white"
+                              : "text-white/60"
+                          }`}
+                        />
+                        <span
+                          className={`[font-family:'Lato',Helvetica] text-[15px] ${
+                            activeChannel.id === ch.id
+                              ? "font-semibold text-white"
+                              : "font-normal text-white/80"
+                          }`}
+                        >
+                          {ch.name}
+                        </span>
+                      </button>
+                    ))}
+                </div>
               </div>
 
               <div>
-                <span className="text-xs uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-2 block">Voice Channels</span>
-                {mockChannels
-                  .filter((ch) => ch.type === "voice")
-                  .map((ch) => (
-                    <div
-                      key={ch.id}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-white/30 dark:hover:bg-white/5 text-sm text-gray-700 dark:text-gray-300"
-                    >
-                      <Volume2 className="w-4 h-4 opacity-70" />
-                      {ch.name}
-                    </div>
-                  ))}
+                <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff8c] text-[15px] mb-2 block">
+                  VOICE CHANNELS
+                </span>
+                <div className="space-y-1">
+                  {mockChannels
+                    .filter((ch) => ch.type === "voice")
+                    .map((ch) => (
+                      <div
+                        key={ch.id}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-all duration-300 cursor-pointer"
+                      >
+                        <Volume2 className="w-5 h-5 text-white/60" />
+                        <span className="[font-family:'Lato',Helvetica] font-normal text-white/80 text-[15px]">
+                          {ch.name}
+                        </span>
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
           </ScrollArea>
         </aside>
 
         {/* Main Chat */}
-        <main className="flex-1 flex flex-col">
-          <header className="h-12 flex items-center px-5 border-b border-white/10 dark:border-white/10 backdrop-blur-md bg-white/20 dark:bg-[#1b1f2e]/20">
-            <Hash className="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2" />
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">{activeChannel.name}</h3>
+        <main className="flex-1 flex flex-col bg-transparent overflow-hidden min-h-0">
+          <header className="h-[60px] flex items-center px-6 border-b border-white/10 backdrop-blur-xl bg-white/5 flex-shrink-0">
+            <Hash className="w-5 h-5 text-white/60 mr-2" />
+            <h3 className="[font-family:'Lato',Helvetica] font-bold text-white text-[17px]">
+              {activeChannel.name}
+            </h3>
           </header>
 
-          <ScrollArea className="flex-1 p-4 overflow-y-auto">
-            <div className="space-y-4">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="space-y-4 px-6 py-4">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className="flex gap-3 items-start p-3 rounded-xl backdrop-blur-md bg-white/30 dark:bg-white/10 hover:shadow-md transition"
+                  className="flex gap-3 items-start p-4 rounded-lg backdrop-blur-sm bg-white/10 hover:bg-white/15 transition-all duration-300"
                 >
-                  <img src={msg.avatar} alt={msg.author} className="w-8 h-8 rounded-full" />
-                  <div>
-                    <div className="flex items-baseline gap-2 mb-0.5">
-                      <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{msg.author}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{msg.timestamp}</span>
+                  <img
+                    src={msg.avatar}
+                    alt={msg.author}
+                    className="w-10 h-10 rounded-xl"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="[font-family:'Lato',Helvetica] font-normal text-white text-[15px]">
+                        {msg.author}
+                      </span>
+                      <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-[13px]">
+                        {msg.timestamp}
+                      </span>
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 text-[14px] leading-snug">{msg.content}</p>
+                    <p className="[font-family:'Lato',Helvetica] font-normal text-white/80 text-[15px] leading-relaxed">
+                      {msg.content}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
           </ScrollArea>
 
-          <footer className="p-3 backdrop-blur-md bg-white/20 dark:bg-[#1b1f2e]/20 border-t border-white/10 dark:border-white/10 flex items-center gap-2">
-            <button className="p-1.5 rounded-full hover:bg-white/30 dark:hover:bg-white/10 transition">
-              <Plus className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+          <footer className="px-6 py-4 backdrop-blur-xl bg-white/5 border-t border-white/10 flex items-center gap-3 flex-shrink-0">
+            <button className="p-2 rounded-lg hover:bg-white/10 transition-all duration-300">
+              <Plus className="w-5 h-5 text-white/60" />
             </button>
             <Input
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={`Message #${activeChannel.name}`}
-              className="flex-1 bg-white/50 dark:bg-white/10 border-none rounded-lg text-[14px] text-gray-800 dark:text-gray-100 focus-visible:ring-0"
+              className="flex-1 bg-white/10 border-none rounded-lg [font-family:'Lato',Helvetica] text-[15px] text-white placeholder:text-white/40 focus-visible:ring-1 focus-visible:ring-white/20 h-11"
             />
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {[Gift, Paperclip, Smile].map((Icon, i) => (
-                <button key={i} className="p-1.5 rounded-full hover:bg-white/30 dark:hover:bg-white/10 transition text-gray-600 dark:text-gray-300">
-                  <Icon className="w-4 h-4" />
+                <button
+                  key={i}
+                  className="p-2 rounded-lg hover:bg-white/10 transition-all duration-300"
+                >
+                  <Icon className="w-5 h-5 text-white/60" />
                 </button>
               ))}
               <button
                 onClick={handleSendMessage}
-                className="p-2 bg-gradient-to-br from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg shadow transition"
+                className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white rounded-lg transition-all duration-300 flex items-center gap-2"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-5 h-5" />
               </button>
             </div>
           </footer>

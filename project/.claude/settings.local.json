@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(if not exist \"src\\lib\" mkdir srclib)",
+      "WebFetch(domain:docs.availproject.org)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(npx hardhat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

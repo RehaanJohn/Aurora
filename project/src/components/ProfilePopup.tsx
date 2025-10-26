@@ -1,32 +1,38 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
-import { Separator } from './ui/separator';
-import { User, Settings, LogOut, Bell, HelpCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
+import { User, Settings, LogOut, Bell, HelpCircle } from "lucide-react";
 
 interface ProfilePopupProps {
   username: string;
   avatar: string;
 }
 
-export const ProfilePopup: React.FC<ProfilePopupProps> = ({ username, avatar }) => {
+export const ProfilePopup: React.FC<ProfilePopupProps> = ({
+  username,
+  avatar,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -72,28 +78,36 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ username, avatar }) 
                 className="w-full justify-start gap-3 px-3 py-2 hover:bg-white/10 text-white transition-all duration-300"
               >
                 <User className="w-4 h-4" />
-                <span className="[font-family:'Lato',Helvetica] text-sm">View Profile</span>
+                <span className="[font-family:'Lato',Helvetica] text-sm">
+                  View Profile
+                </span>
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-3 px-3 py-2 hover:bg-white/10 text-white transition-all duration-300"
               >
                 <Settings className="w-4 h-4" />
-                <span className="[font-family:'Lato',Helvetica] text-sm">Settings</span>
+                <span className="[font-family:'Lato',Helvetica] text-sm">
+                  Settings
+                </span>
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-3 px-3 py-2 hover:bg-white/10 text-white transition-all duration-300"
               >
                 <Bell className="w-4 h-4" />
-                <span className="[font-family:'Lato',Helvetica] text-sm">Notifications</span>
+                <span className="[font-family:'Lato',Helvetica] text-sm">
+                  Notifications
+                </span>
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start gap-3 px-3 py-2 hover:bg-white/10 text-white transition-all duration-300"
               >
                 <HelpCircle className="w-4 h-4" />
-                <span className="[font-family:'Lato',Helvetica] text-sm">Help & Support</span>
+                <span className="[font-family:'Lato',Helvetica] text-sm">
+                  Help & Support
+                </span>
               </Button>
             </div>
 
@@ -104,7 +118,9 @@ export const ProfilePopup: React.FC<ProfilePopupProps> = ({ username, avatar }) 
               className="w-full justify-start gap-3 px-3 py-2 hover:bg-red-500/20 text-red-400 transition-all duration-300"
             >
               <LogOut className="w-4 h-4" />
-              <span className="[font-family:'Lato',Helvetica] text-sm">Log Out</span>
+              <span className="[font-family:'Lato',Helvetica] text-sm">
+                Log Out
+              </span>
             </Button>
           </CardContent>
         </Card>

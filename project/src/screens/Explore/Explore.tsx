@@ -34,7 +34,7 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
   );
 
   const handleCommunityClick = (communityName: string) => {
-    console.log(`Opening community: ${communityName}`);
+    console.log(`Viewing community: ${communityName}`);
   };
 
   // Get category display name
@@ -54,8 +54,8 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6 bg-white/5 backdrop-blur-md rounded-xl border border-white/20 p-3 flex items-center gap-2 hover:bg-white/10 transition-all duration-300">
+    <div className="h-full flex flex-col p-6 overflow-hidden">
+      <div className="mb-6 bg-white/5 backdrop-blur-md rounded-xl border border-white/20 p-3 flex items-center gap-2 hover:bg-white/10 transition-all duration-300 flex-shrink-0">
         <img
           className="w-3 h-3"
           alt="Icon magnifyingglass"
@@ -69,22 +69,22 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
         />
       </div>
 
-      <ScrollArea className="h-[calc(100vh-180px)]">
-        <div className="space-y-8">
+      <ScrollArea className="flex-1 min-h-0">
+        <div className="space-y-8 pb-6">
           <section>
-            <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
+            <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.01]">
               <CardContent className="p-0 flex flex-col">
                 <div className="p-8 flex flex-col gap-2 bg-gradient-to-b from-slate-800/80 to-transparent">
-                  <h2 className="[font-family:'SF_Compact_Rounded-Regular',Helvetica] font-normal text-white text-2xl text-center">
+                  <h2 className="[font-family:'SF_Compact_Rounded-Regular',Helvetica] font-normal text-white text-2xl text-center drop-shadow-lg">
                     Find Your Community
                   </h2>
-                  <h2 className="[font-family:'SF_Compact_Rounded-Regular',Helvetica] font-normal text-white text-2xl text-center">
+                  <h2 className="[font-family:'SF_Compact_Rounded-Regular',Helvetica] font-normal text-white text-2xl text-center drop-shadow-lg">
                     on Daccord
                   </h2>
                 </div>
-                <div className="w-full h-[180px] overflow-hidden">
+                <div className="w-full h-[200px] overflow-hidden">
                   <img
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                     alt="Photo"
                     src="/photo-1647351408653-d582b364bf2f.png"
                   />
@@ -118,49 +118,53 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
                   <Card
                     key={index}
                     onClick={() => handleCommunityClick(community.title)}
-                    className="bg-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl hover:border-blue-400/30 transition-all duration-500 hover:scale-[1.02] relative group cursor-pointer"
+                    className="bg-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl hover:border-blue-400/30 transition-all duration-500 hover:scale-[1.01] relative group cursor-pointer"
                   >
                     <CardContent className="p-0 relative">
-                      <div className="relative h-52">
+                      <div className="relative h-[240px] overflow-hidden">
                         <img
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-center"
                           alt="Group img"
                           src={community.image}
                         />
-                        <img
-                          className="absolute bottom-0 left-0 w-full"
-                          alt="Shape"
-                          src={community.shape}
-                        />
-                      </div>
-                      <div className="p-6 space-y-4">
-                        <div className="flex items-center gap-3">
+                        {community.shape && (
                           <img
-                            className="w-[38px] h-9"
-                            alt="Avatar"
-                            src={community.avatar}
+                            className="absolute bottom-0 left-0 w-full h-auto"
+                            alt="Shape"
+                            src={community.shape}
                           />
-                          <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[22px]">
+                        )}
+                      </div>
+                      <div className="p-6 space-y-4 bg-gradient-to-t from-slate-900/50 to-transparent">
+                        <div className="flex items-center gap-3">
+                          {community.avatar && (
+                            <img
+                              className="w-[38px] h-9 object-contain"
+                              alt="Avatar"
+                              src={community.avatar}
+                            />
+                          )}
+                          <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[22px] drop-shadow-md">
                             {community.title}
                           </h3>
                         </div>
-                        <p className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff8c] text-[13px]">
+                        <p className="[font-family:'Lato',Helvetica] font-normal text-white/70 text-[13px] leading-relaxed">
                           {community.description}
                         </p>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between pt-2">
                           <div className="flex items-center gap-1">
-                            <span className="[font-family:'SF_Compact-Regular',Helvetica] text-[#ffffff40] text-xs font-normal">
+                            <span className="[font-family:'SF_Compact-Regular',Helvetica] text-white/50 text-xs font-normal">
                               􁂛
                             </span>
-                            <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-xs">
+                            <span className="[font-family:'Lato',Helvetica] font-normal text-white/50 text-xs">
                               {community.online} Online
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] text-text-colordarktertiary text-xs font-normal">
+                            <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] text-white/50 text-xs font-normal">
                               􀉭
                             </span>
-                            <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-xs">
+                            <span className="[font-family:'Lato',Helvetica] font-normal text-white/50 text-xs">
                               {community.members} Members
                             </span>
                           </div>
@@ -198,25 +202,27 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
                   <Card
                     key={index}
                     onClick={() => handleCommunityClick(community.title)}
-                    className="bg-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl hover:border-emerald-400/30 transition-all duration-500 hover:scale-[1.02] relative group cursor-pointer"
+                    className="bg-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl hover:border-emerald-400/30 transition-all duration-500 hover:scale-[1.01] relative group cursor-pointer"
                   >
                     <CardContent className="p-0 relative">
                       {community.shape ? (
                         <>
-                          <div className="relative h-52">
+                          <div className="relative h-[220px] overflow-hidden">
                             <img
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover object-center"
                               alt="Photo"
                               src={community.image}
                             />
-                            <img
-                              className="absolute bottom-0 left-0 w-full"
-                              alt="Union"
-                              src={community.shape}
-                            />
+                            {community.shape && (
+                              <img
+                                className="absolute bottom-0 left-0 w-full h-auto"
+                                alt="Union"
+                                src={community.shape}
+                              />
+                            )}
                           </div>
                           {community.avatar && (
-                            <div className="absolute top-4 left-4">
+                            <div className="absolute top-4 left-4 bg-black/30 backdrop-blur-sm rounded-xl p-1">
                               <img
                                 className="w-[37.89px] h-9 rounded-xl object-cover"
                                 alt="Polygon"
@@ -224,29 +230,29 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
                               />
                             </div>
                           )}
-                          <div className="p-6 space-y-2">
-                            <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[22px]">
+                          <div className="p-5 space-y-2 bg-gradient-to-t from-slate-900/50 to-transparent">
+                            <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[20px] drop-shadow-md">
                               {community.title}
                             </h3>
-                            <p className="[font-family:'Lato',Helvetica] font-normal text-text-colordarksecondary text-[13px]">
+                            <p className="[font-family:'Lato',Helvetica] font-normal text-white/70 text-[13px] leading-relaxed line-clamp-2">
                               {community.description}
                             </p>
                             <div className="flex items-center justify-between pt-2">
                               {community.online && (
                                 <div className="flex items-center gap-1">
-                                  <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] font-normal text-text-colordarktertiary text-xs">
+                                  <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] font-normal text-white/50 text-xs">
                                     􁂛
                                   </span>
-                                  <span className="[font-family:'Lato',Helvetica] font-normal text-text-colordarktertiary text-xs">
+                                  <span className="[font-family:'Lato',Helvetica] font-normal text-white/50 text-xs">
                                     {community.online} Online
                                   </span>
                                 </div>
                               )}
                               <div className="flex items-center gap-1">
-                                <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] font-normal text-text-colordarktertiary text-xs">
+                                <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] font-normal text-white/50 text-xs">
                                   􀉭
                                 </span>
-                                <span className="[font-family:'Lato',Helvetica] font-normal text-text-colordarktertiary text-xs">
+                                <span className="[font-family:'Lato',Helvetica] font-normal text-white/50 text-xs">
                                   {community.members} Members
                                 </span>
                               </div>
@@ -255,40 +261,40 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
                         </>
                       ) : (
                         <>
-                          <div className="relative h-52">
+                          <div className="relative h-[220px] overflow-hidden">
                             <img
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover object-center"
                               alt="Photo"
                               src={community.image}
                             />
+                          </div>
+                          <div className="absolute inset-0 rounded-[20px] overflow-hidden border border-white/30 bg-gradient-to-br from-blue-600/80 to-cyan-500/80 backdrop-blur-sm">
                             {community.polygonTop && (
                               <img
-                                className="absolute top-4 left-4 w-[75px] h-20 object-cover"
+                                className="absolute top-4 left-4 w-[75px] h-20 object-contain opacity-50"
                                 alt="Polygon"
                                 src={community.polygonTop}
                               />
                             )}
                             {community.polygonBottom && (
                               <img
-                                className="absolute top-4 left-4 w-[79px] h-[84px]"
+                                className="absolute top-4 left-4 w-[79px] h-[84px] object-contain"
                                 alt="Polygon"
                                 src={community.polygonBottom}
                               />
                             )}
-                          </div>
-                          <div className="absolute inset-0 rounded-[20px] overflow-hidden border border-white/30 bg-gradient-to-br from-blue-600/80 to-cyan-500/80 backdrop-blur-sm">
-                            <div className="p-6 space-y-2 absolute bottom-0 left-0 right-0">
-                              <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[22px]">
+                            <div className="p-5 space-y-2 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/40 to-transparent">
+                              <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[20px] drop-shadow-lg">
                                 {community.title}
                               </h3>
-                              <p className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff8c] text-[13px]">
+                              <p className="[font-family:'Lato',Helvetica] font-normal text-white/90 text-[13px] leading-relaxed line-clamp-2">
                                 {community.description}
                               </p>
-                              <div className="flex items-center gap-1">
-                                <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] text-text-colordarktertiary text-xs font-normal">
+                              <div className="flex items-center gap-1 pt-1">
+                                <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] text-white/70 text-xs font-normal">
                                   􀉭
                                 </span>
-                                <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-xs">
+                                <span className="[font-family:'Lato',Helvetica] font-normal text-white/70 text-xs">
                                   {community.members} Members
                                 </span>
                               </div>
@@ -328,35 +334,35 @@ export const Explore = ({ activeNav }: ExploreProps): JSX.Element => {
                   <Card
                     key={index}
                     onClick={() => handleCommunityClick(community.title)}
-                    className="bg-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl hover:border-emerald-400/30 transition-all duration-500 hover:scale-[1.02] relative group cursor-pointer"
+                    className="bg-white/5 backdrop-blur-xl rounded-[20px] overflow-hidden border border-white/20 shadow-xl hover:shadow-2xl hover:border-emerald-400/30 transition-all duration-500 hover:scale-[1.01] relative group cursor-pointer"
                   >
                     <CardContent className="p-0 relative">
-                      <div className="relative h-52">
+                      <div className="relative h-[220px] overflow-hidden">
                         <img
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-center"
                           alt="Photo"
                           src={community.image}
                         />
                         {community.shape && (
                           <img
-                            className="absolute bottom-0 left-0 w-full"
+                            className="absolute bottom-0 left-0 w-full h-auto"
                             alt="Union"
                             src={community.shape}
                           />
                         )}
                       </div>
-                      <div className="p-6 space-y-2">
-                        <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[22px]">
+                      <div className="p-5 space-y-2 bg-gradient-to-t from-slate-900/50 to-transparent">
+                        <h3 className="[font-family:'SF_Compact_Rounded-Semibold',Helvetica] font-normal text-white text-[20px] drop-shadow-md">
                           {community.title}
                         </h3>
-                        <p className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff8c] text-[13px]">
+                        <p className="[font-family:'Lato',Helvetica] font-normal text-white/70 text-[13px] leading-relaxed line-clamp-2">
                           {community.description}
                         </p>
-                        <div className="flex items-center gap-1">
-                          <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] text-text-colordarktertiary text-xs font-normal">
+                        <div className="flex items-center gap-1 pt-1">
+                          <span className="[font-family:'SF_Compact_Display-Regular',Helvetica] text-white/50 text-xs font-normal">
                             􀉭
                           </span>
-                          <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-xs">
+                          <span className="[font-family:'Lato',Helvetica] font-normal text-white/50 text-xs">
                             {community.members} Members
                           </span>
                         </div>

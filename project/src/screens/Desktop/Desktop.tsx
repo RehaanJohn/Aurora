@@ -12,6 +12,7 @@ import { ProfilePopup } from "../../components/ProfilePopup";
 import { AuthModal } from "../../components/AuthModal";
 import { UserMenu } from "../../components/UserMenu";
 import { WalletConnect } from "../../components/WalletConnect";
+import { StakingModal } from "../../components/StakingModal";
 import { useAuth } from "../../contexts/AuthContext";
 import { Explore } from "../Explore";
 import { Chat } from "../Chat";
@@ -70,10 +71,23 @@ export const Desktop = (): JSX.Element => {
   const [activeScreen, setActiveScreen] = useState<Screen>("explore");
   const [activeServer, setActiveServer] = useState<Server | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isStakingModalOpen, setIsStakingModalOpen] = useState(false);
+  const [pendingServer, setPendingServer] = useState<Server | null>(null);
 
   const handleServerClick = (server: Server) => {
-    setActiveServer(server);
-    setActiveScreen("chat");
+    // Open staking modal instead of directly entering chat
+    setPendingServer(server);
+    setIsStakingModalOpen(true);
+  };
+
+  const handleStakingSuccess = () => {
+    // After successful staking, open the chat
+    if (pendingServer) {
+      setActiveServer(pendingServer);
+      setActiveScreen("chat");
+      setPendingServer(null);
+    }
+    setIsStakingModalOpen(false);
   };
 
   const handleMemberClick = (memberName: string) => {
@@ -81,7 +95,7 @@ export const Desktop = (): JSX.Element => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 w-full min-w-[1920px] min-h-[960px] flex relative overflow-hidden">
+    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 w-full min-w-[1920px] h-screen flex relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-emerald-900/20"></div>
       <div className="absolute inset-0 backdrop-blur-[100px]"></div>
       <aside className="w-[87px] bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col items-center py-6 gap-8 relative z-10">
@@ -140,50 +154,52 @@ export const Desktop = (): JSX.Element => {
         </div>
       </aside>
 
-      <div className="w-[280px] bg-white/5 backdrop-blur-xl flex flex-col relative z-10">
-        <header className="h-[60px] flex items-center px-6 bg-white/0 border-b border-white/10">
-          <h1 className="font-bold text-[17px] [font-family:'Lato',Helvetica] text-white tracking-[0] leading-[normal]">
-            Explore
-          </h1>
-        </header>
+      {activeScreen !== "chat" && (
+        <div className="w-[280px] bg-white/5 backdrop-blur-xl flex flex-col relative z-10">
+          <header className="h-[60px] flex items-center px-6 bg-white/0 border-b border-white/10">
+            <h1 className="font-bold text-[17px] [font-family:'Lato',Helvetica] text-white tracking-[0] leading-[normal]">
+              Explore
+            </h1>
+          </header>
 
-        <ScrollArea className="flex-1 px-4 py-6">
-          <nav className="flex flex-col gap-2">
-            {navigationItems.map((item, index) => (
-              <Button
-                key={index}
-                variant="ghost"
-                onClick={() => setActiveNav(item.icon)}
-                className={`h-auto justify-start gap-3 px-3 py-2.5 rounded-lg ${
-                  activeNav === item.icon
-                    ? "bg-white/10 backdrop-blur-sm shadow-lg"
-                    : "bg-transparent hover:bg-white/5"
-                } transition-all duration-300`}
-              >
-                <NavigationIcon
-                  type={item.icon}
-                  className={`w-5 h-5 ${
-                    activeNav === item.icon ? "text-white" : "text-white/60"
-                  }`}
-                />
-                <span
-                  className={`[font-family:'Lato',Helvetica] text-[15px] tracking-[0.36px] ${
+          <ScrollArea className="flex-1 px-4 py-6">
+            <nav className="flex flex-col gap-2">
+              {navigationItems.map((item, index) => (
+                <Button
+                  key={index}
+                  variant="ghost"
+                  onClick={() => setActiveNav(item.icon)}
+                  className={`h-auto justify-start gap-3 px-3 py-2.5 rounded-lg ${
                     activeNav === item.icon
-                      ? "font-semibold text-white"
-                      : "font-normal text-white/80"
-                  }`}
+                      ? "bg-white/10 backdrop-blur-sm shadow-lg"
+                      : "bg-transparent hover:bg-white/5"
+                  } transition-all duration-300`}
                 >
-                  {item.label}
-                </span>
-              </Button>
-            ))}
-          </nav>
-        </ScrollArea>
+                  <NavigationIcon
+                    type={item.icon}
+                    className={`w-5 h-5 ${
+                      activeNav === item.icon ? "text-white" : "text-white/60"
+                    }`}
+                  />
+                  <span
+                    className={`[font-family:'Lato',Helvetica] text-[15px] tracking-[0.36px] ${
+                      activeNav === item.icon
+                        ? "font-semibold text-white"
+                        : "font-normal text-white/80"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                </Button>
+              ))}
+            </nav>
+          </ScrollArea>
 
-        <div className="p-4">
-          <img className="w-full h-auto" alt="Frame" src="/frame-7.svg" />
+          <div className="p-4">
+            <img className="w-full h-auto" alt="Frame" src="/frame-7.svg" />
+          </div>
         </div>
-      </div>
+      )}
 
       <main className="flex-1 bg-transparent flex flex-col relative z-10">
         <header className="h-[60px] bg-white/5 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-6">
@@ -194,8 +210,12 @@ export const Desktop = (): JSX.Element => {
           </div>
         </header>
 
-        {activeScreen === "explore" && <Explore activeNav={activeNav} />}
-        {activeScreen === "chat" && activeServer && <Chat server={activeServer} />}
+        <div className="flex-1 overflow-hidden">
+          {activeScreen === "explore" && <Explore activeNav={activeNav} />}
+          {activeScreen === "chat" && activeServer && (
+            <Chat server={activeServer} />
+          )}
+        </div>
       </main>
 
       <aside className="w-[360px] bg-white/5 backdrop-blur-xl overflow-hidden border-l border-white/10 flex flex-col relative z-10">
@@ -292,7 +312,21 @@ export const Desktop = (): JSX.Element => {
         )}
       </div>
 
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      <StakingModal
+        isOpen={isStakingModalOpen}
+        onClose={() => {
+          setIsStakingModalOpen(false);
+          setPendingServer(null);
+        }}
+        onSuccess={handleStakingSuccess}
+        serverName={pendingServer?.name || ""}
+        serverId={pendingServer?.id || ""}
+      />
     </div>
   );
 };
