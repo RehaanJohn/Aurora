@@ -103,7 +103,7 @@ export const Desktop = (): JSX.Element => {
       <aside className="w-[87px] bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col items-center py-6 gap-8 relative z-10">
         <div className="flex flex-col items-center gap-6">
           <div className="w-10 h-10 relative">
-            <img className="w-10 h-10" alt="Group" src="/group-29.png" />
+            <div className="text-4xl">🦀</div>
           </div>
 
           <Separator className="w-[50px] bg-white/10" />
@@ -204,103 +204,150 @@ export const Desktop = (): JSX.Element => {
       )}
 
       <main className="flex-1 bg-transparent flex flex-col relative z-10">
-        <header className="h-[60px] bg-white/5 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-6">
-          <ProfilePopup username="sophiefortune" avatar="/user-profil.png" />
+        <header className="h-[60px] bg-gradient-to-r from-white/5 via-white/10 to-white/5 backdrop-blur-2xl border-b border-white/10 flex items-center justify-between px-6 shadow-lg">
+          <ProfilePopup username="rehaan" avatar="/user-profil.png" />
 
-          <div className="flex items-center gap-2">
-            <span className="text-white/60 text-sm font-medium">Daccord</span>
+          <div className="flex items-center gap-3">
+            <div className="px-4 py-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-md rounded-full border border-white/20">
+              <span className="text-white text-sm font-semibold tracking-wide bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-transparent">
+                Aurora
+              </span>
+            </div>
           </div>
         </header>
 
         <div className="flex-1 overflow-hidden">
           {activeScreen === "explore" && <Explore activeNav={activeNav} />}
           {activeScreen === "chat" && activeServer && (
-            <Chat 
-              server={activeServer} 
+            <Chat
+              server={activeServer}
               onOpenStakingModal={() => handleOpenStakingModal(activeServer)}
             />
           )}
         </div>
       </main>
 
-      <aside className="w-[360px] bg-white/5 backdrop-blur-xl overflow-hidden border-l border-white/10 flex flex-col relative z-10">
-        <div className="p-6 border-b border-white/10">
-          <WalletConnect />
-        </div>
+      {user && (
+        <aside className="w-[360px] bg-gradient-to-b from-white/5 via-white/3 to-white/5 backdrop-blur-2xl overflow-hidden border-l border-white/10 flex flex-col relative z-10 shadow-2xl">
+          <div className="p-6 border-b border-white/10 bg-gradient-to-br from-white/5 to-transparent">
+            <WalletConnect />
+          </div>
 
-        <ScrollArea className="flex-1 p-6">
-          <div className="space-y-6">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative">
-                <img
-                  className="w-[111px] h-[121px] rounded-[22px] border-2 border-white/20 shadow-lg"
-                  alt="User profile"
-                  src="/user-profil.png"
-                />
-              </div>
-
-              <div className="text-center">
-                <h3 className="[font-family:'Lato',Helvetica] font-bold text-white text-[17px]">
-                  Sophie Fortune
-                </h3>
-                <p className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-[15px]">
-                  @sophiefortune
-                </p>
-              </div>
-            </div>
-
-            <section>
-              <div className="flex items-center justify-between px-0 py-2 mb-2">
-                <h3 className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff8c] text-[15px]">
-                  New Members
-                </h3>
-                <Button
-                  variant="link"
-                  className="h-auto p-0 [font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-[15px]"
-                >
-                  See all
-                </Button>
-              </div>
-
-              <div className="space-y-2">
-                {newMembers.map((member, index) => (
-                  <Button
-                    key={index}
-                    variant="ghost"
-                    onClick={() => handleMemberClick(member.name)}
-                    className="w-full h-auto justify-start gap-2 px-2 py-2 rounded-lg bg-white/10 backdrop-blur-sm hover:bg-white/15 transition-all duration-300"
-                  >
-                    <Avatar className="w-[39.11px] h-[41.29px] rounded-xl">
-                      <AvatarImage
-                        src={member.avatar}
-                        alt={member.name}
-                        className="object-cover"
+          <ScrollArea className="flex-1 p-6">
+            <div className="space-y-6">
+              <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl border border-white/20 shadow-2xl">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full blur-2xl opacity-60 group-hover:opacity-90 transition-opacity duration-500 animate-pulse"></div>
+                  <div className="relative w-[120px] h-[120px] rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 p-1 backdrop-blur-sm">
+                    <div className="w-full h-full rounded-full bg-gradient-to-br from-slate-800 to-slate-900 p-1 ring-2 ring-white/20 ring-offset-2 ring-offset-slate-800/50">
+                      <img
+                        className="w-full h-full rounded-full object-cover border-2 border-white/10 shadow-2xl"
+                        alt="User profile"
+                        src="/user-profil.png"
                       />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-start gap-1">
-                      <span className="[font-family:'Lato',Helvetica] font-normal text-white text-[15px] leading-[15px]">
-                        {member.name}
-                      </span>
-                      <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-[13px] leading-[13px]">
-                        {member.time}
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full border-4 border-slate-800 shadow-lg">
+                    <div className="w-full h-full rounded-full bg-green-400 animate-pulse"></div>
+                  </div>
+                </div>
+
+                <div className="text-center space-y-2">
+                  <h3 className="[font-family:'Lato',Helvetica] font-bold text-white text-[20px] tracking-wide bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 bg-clip-text text-transparent">
+                    Rehaan
+                  </h3>
+                  <p className="[font-family:'Lato',Helvetica] font-normal text-white/50 text-[14px] tracking-wider">
+                    @rehaan
+                  </p>
+                  <div className="flex items-center gap-2 justify-center pt-2">
+                    <div className="px-4 py-1.5 bg-gradient-to-r from-blue-500/30 to-purple-500/30 backdrop-blur-md rounded-full border border-blue-400/40 shadow-lg">
+                      <span className="text-blue-200 text-xs font-bold tracking-wide">
+                        ✨ Premium
                       </span>
                     </div>
-                  </Button>
-                ))}
+                  </div>
+                </div>
               </div>
-            </section>
 
-            <section>
-              <div className="flex items-center justify-between px-0 py-2">
-                <h3 className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff8c] text-[15px]">
-                  Follow me
-                </h3>
-              </div>
-            </section>
-          </div>
-        </ScrollArea>
-      </aside>
+              <section className="relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-2xl border border-white/20 shadow-2xl">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
+                <div className="relative">
+                  <div className="flex items-center justify-between px-2 py-2 mb-4">
+                    <h3 className="[font-family:'Lato',Helvetica] font-bold text-white text-[16px] tracking-wide">
+                      New Members
+                    </h3>
+                    <Button
+                      variant="link"
+                      className="h-auto p-0 [font-family:'Lato',Helvetica] font-medium text-blue-400/80 hover:text-blue-300 text-[13px]"
+                    >
+                      See all →
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {newMembers.map((member, index) => (
+                      <Button
+                        key={index}
+                        variant="ghost"
+                        onClick={() => handleMemberClick(member.name)}
+                        className="w-full h-auto justify-start gap-3 px-3 py-3 rounded-xl bg-gradient-to-r from-white/5 to-transparent backdrop-blur-md hover:from-white/10 hover:to-white/5 border border-white/10 hover:border-white/30 transition-all duration-300 group"
+                      >
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
+                          <Avatar className="relative w-[42px] h-[42px] rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all">
+                            <AvatarImage
+                              src={member.avatar}
+                              alt={member.name}
+                              className="object-cover"
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-sm">
+                              {member.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="flex flex-col items-start gap-1 flex-1">
+                          <span className="[font-family:'Lato',Helvetica] font-semibold text-white text-[14px] leading-tight group-hover:text-blue-200 transition-colors">
+                            {member.name}
+                          </span>
+                          <span className="[font-family:'Lato',Helvetica] font-normal text-white/40 text-[12px] leading-tight">
+                            {member.time}
+                          </span>
+                        </div>
+                        <div className="w-2 h-2 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              <section className="relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-2xl border border-white/20 shadow-2xl">
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
+                <div className="relative">
+                  <div className="flex items-center justify-between px-2 py-2 mb-4">
+                    <h3 className="[font-family:'Lato',Helvetica] font-bold text-white text-[16px] tracking-wide">
+                      Connect
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button className="relative overflow-hidden p-3.5 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-md border border-blue-400/30 hover:border-blue-300/50 transition-all duration-300 group">
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <span className="relative text-blue-200 text-sm font-bold group-hover:text-white transition-colors">
+                        Twitter
+                      </span>
+                    </button>
+                    <button className="relative overflow-hidden p-3.5 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 backdrop-blur-md border border-purple-400/30 hover:border-purple-300/50 transition-all duration-300 group">
+                      <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <span className="relative text-purple-200 text-sm font-bold group-hover:text-white transition-colors">
+                        GitHub
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </ScrollArea>
+        </aside>
+      )}
 
       <div className="fixed bottom-6 left-[19px] z-50">
         {user ? (

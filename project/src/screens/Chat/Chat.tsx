@@ -76,7 +76,10 @@ const mockMessages: Message[] = [
   },
 ];
 
-export const Chat = ({ server, onOpenStakingModal }: ChatProps): JSX.Element => {
+export const Chat = ({
+  server,
+  onOpenStakingModal,
+}: ChatProps): JSX.Element => {
   const { address } = useAccount();
   const { isMember } = useCheckMembership(server.id);
   const [activeChannel, setActiveChannel] = useState(mockChannels[0]);
@@ -204,7 +207,9 @@ export const Chat = ({ server, onOpenStakingModal }: ChatProps): JSX.Element => 
             )}
             {isMember && (
               <div className="px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-lg">
-                <span className="text-green-400 text-xs font-semibold">✓ Staked Member</span>
+                <span className="text-green-400 text-xs font-semibold">
+                  ✓ Staked Member
+                </span>
               </div>
             )}
           </header>
@@ -227,9 +232,13 @@ export const Chat = ({ server, onOpenStakingModal }: ChatProps): JSX.Element => 
                   />
                   <div className="flex-1">
                     <div className="flex items-baseline gap-2 mb-1">
-                      <span className={`[font-family:'Lato',Helvetica] font-normal text-[15px] ${
-                        msg.isStaked ? "text-blue-300 font-semibold" : "text-white"
-                      }`}>
+                      <span
+                        className={`[font-family:'Lato',Helvetica] font-normal text-[15px] ${
+                          msg.isStaked
+                            ? "text-blue-300 font-semibold"
+                            : "text-white"
+                        }`}
+                      >
                         {msg.author}
                       </span>
                       {msg.isStaked && (
