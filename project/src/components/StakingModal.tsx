@@ -393,13 +393,12 @@ export const StakingModal: React.FC<StakingModalProps> = ({
                 onClick={() => {
                   if (onSuccess) {
                     onSuccess();
-                  } else {
-                    handleClose();
                   }
+                  handleClose();
                 }}
                 className="w-full h-12 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold"
               >
-                Enter Server
+                Continue
               </Button>
             </div>
           )}

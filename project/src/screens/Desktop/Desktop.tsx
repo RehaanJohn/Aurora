@@ -75,19 +75,21 @@ export const Desktop = (): JSX.Element => {
   const [pendingServer, setPendingServer] = useState<Server | null>(null);
 
   const handleServerClick = (server: Server) => {
-    // Open staking modal instead of directly entering chat
+    // Directly enter the server without requiring staking
+    setActiveServer(server);
+    setActiveScreen("chat");
+  };
+
+  const handleOpenStakingModal = (server: Server) => {
+    // Open staking modal for the current server
     setPendingServer(server);
     setIsStakingModalOpen(true);
   };
 
   const handleStakingSuccess = () => {
-    // After successful staking, open the chat
-    if (pendingServer) {
-      setActiveServer(pendingServer);
-      setActiveScreen("chat");
-      setPendingServer(null);
-    }
+    // After successful staking, close modal
     setIsStakingModalOpen(false);
+    setPendingServer(null);
   };
 
   const handleMemberClick = (memberName: string) => {
@@ -213,7 +215,10 @@ export const Desktop = (): JSX.Element => {
         <div className="flex-1 overflow-hidden">
           {activeScreen === "explore" && <Explore activeNav={activeNav} />}
           {activeScreen === "chat" && activeServer && (
-            <Chat server={activeServer} />
+            <Chat 
+              server={activeServer} 
+              onOpenStakingModal={() => handleOpenStakingModal(activeServer)}
+            />
           )}
         </div>
       </main>

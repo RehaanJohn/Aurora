@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import { ScrollArea } from "../../components/ui/scroll-area";
+import { Button } from "../../components/ui/button";
+import { useAccount } from "wagmi";
+import { useCheckMembership } from "../../lib/contracts";
 import {
   Hash,
   Volume2,
@@ -9,6 +12,7 @@ import {
   Smile,
   Gift,
   Paperclip,
+  TrendingUp,
 } from "lucide-react";
 
 interface Server {
@@ -29,10 +33,12 @@ interface Message {
   avatar: string;
   content: string;
   timestamp: string;
+  isStaked?: boolean;
 }
 
 interface ChatProps {
   server: Server;
+  onOpenStakingModal: () => void;
 }
 
 const mockChannels: Channel[] = [
@@ -50,6 +56,7 @@ const mockMessages: Message[] = [
     avatar: "/user-profil.png",
     content: "Hey everyone! Welcome to the server 👋",
     timestamp: "Today at 10:30 AM",
+    isStaked: true,
   },
   {
     id: "2",
@@ -57,6 +64,7 @@ const mockMessages: Message[] = [
     avatar: "/user-profil-1.png",
     content: "Thanks! Excited to be here!",
     timestamp: "Today at 10:32 AM",
+    isStaked: false,
   },
   {
     id: "3",
@@ -64,10 +72,13 @@ const mockMessages: Message[] = [
     avatar: "/polygon-1-1.png",
     content: "This looks amazing! Great work on the setup.",
     timestamp: "Today at 10:35 AM",
+    isStaked: true,
   },
 ];
 
-export const Chat = ({ server }: ChatProps): JSX.Element => {
+export const Chat = ({ server, onOpenStakingModal }: ChatProps): JSX.Element => {
+  const { address } = useAccount();
+  const { isMember } = useCheckMembership(server.id);
   const [activeChannel, setActiveChannel] = useState(mockChannels[0]);
   const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [messageInput, setMessageInput] = useState("");
@@ -175,11 +186,27 @@ export const Chat = ({ server }: ChatProps): JSX.Element => {
 
         {/* Main Chat */}
         <main className="flex-1 flex flex-col bg-transparent overflow-hidden min-h-0">
-          <header className="h-[60px] flex items-center px-6 border-b border-white/10 backdrop-blur-xl bg-white/5 flex-shrink-0">
-            <Hash className="w-5 h-5 text-white/60 mr-2" />
-            <h3 className="[font-family:'Lato',Helvetica] font-bold text-white text-[17px]">
-              {activeChannel.name}
-            </h3>
+          <header className="h-[60px] flex items-center justify-between px-6 border-b border-white/10 backdrop-blur-xl bg-white/5 flex-shrink-0">
+            <div className="flex items-center">
+              <Hash className="w-5 h-5 text-white/60 mr-2" />
+              <h3 className="[font-family:'Lato',Helvetica] font-bold text-white text-[17px]">
+                {activeChannel.name}
+              </h3>
+            </div>
+            {!isMember && address && (
+              <Button
+                onClick={onOpenStakingModal}
+                className="h-9 px-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-sm font-semibold rounded-lg flex items-center gap-2"
+              >
+                <TrendingUp className="w-4 h-4" />
+                Stake to Support
+              </Button>
+            )}
+            {isMember && (
+              <div className="px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-lg">
+                <span className="text-green-400 text-xs font-semibold">✓ Staked Member</span>
+              </div>
+            )}
           </header>
 
           <ScrollArea className="flex-1 min-h-0">
@@ -187,7 +214,11 @@ export const Chat = ({ server }: ChatProps): JSX.Element => {
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className="flex gap-3 items-start p-4 rounded-lg backdrop-blur-sm bg-white/10 hover:bg-white/15 transition-all duration-300"
+                  className={`flex gap-3 items-start p-4 rounded-lg backdrop-blur-sm transition-all duration-300 ${
+                    msg.isStaked
+                      ? "bg-gradient-to-r from-blue-500/15 to-purple-500/15 border border-blue-500/20 hover:border-blue-500/30"
+                      : "bg-white/10 hover:bg-white/15"
+                  }`}
                 >
                   <img
                     src={msg.avatar}
@@ -196,9 +227,16 @@ export const Chat = ({ server }: ChatProps): JSX.Element => {
                   />
                   <div className="flex-1">
                     <div className="flex items-baseline gap-2 mb-1">
-                      <span className="[font-family:'Lato',Helvetica] font-normal text-white text-[15px]">
+                      <span className={`[font-family:'Lato',Helvetica] font-normal text-[15px] ${
+                        msg.isStaked ? "text-blue-300 font-semibold" : "text-white"
+                      }`}>
                         {msg.author}
                       </span>
+                      {msg.isStaked && (
+                        <span className="px-2 py-0.5 bg-blue-500/20 border border-blue-500/30 rounded text-blue-300 text-[10px] font-bold">
+                          STAKED
+                        </span>
+                      )}
                       <span className="[font-family:'Lato',Helvetica] font-normal text-[#ffffff40] text-[13px]">
                         {msg.timestamp}
                       </span>
